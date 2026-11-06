@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Nuestra Boda | Joaquín & Valdelene — 22 de Mayo de 2027</title>
+  
+  <!-- SEO & Open Graph (Optimizado para compartir en WhatsApp e Instagram) -->
+  <meta name="description" content="Nos casamos y queremos compartir este momento tan especial contigo. Joaquín Moya & Valdelene De Souza — Sábado 22 de Mayo de 2027.">
+  <meta property="og:title" content="Boda Joaquín & Valdelene | 22.05.2027">
+  <meta property="og:description" content="Estás cordialmente invitado a celebrar nuestro amor. Toca para abrir la invitación.">
+  <meta property="og:image" content="assets/images/couple.jpg">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#2c4c3b">
+
+  <!-- Google Fonts: Caligrafía Idéntica a la Foto, Serif editorial y Sans limpio -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+  <!-- YouTube IFrame API para música de fondo oficial ("Solo Tú" - Samuel Adrián) -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+</head>
+<body>
+
+  <!-- Canvas para partículas flotantes de hojas de eucalipto / destellos -->
+  <canvas id="ambient-canvas"></canvas>
+
+  <!-- REPRODUCTOR DE MÚSICA FLOTANTE (Solo Tú - Samuel Adrián) -->
+  <div class="music-controller" id="music-controller">
+    <button id="music-btn" class="music-btn" aria-label="Reproducir o pausar música: Solo Tú de Samuel Adrián">
+      <div class="music-disc" id="music-disc">
+        <svg viewBox="0 0 24 24" class="music-icon" fill="currentColor">
+          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        </svg>
+      </div>
+      <span class="music-waves">
+        <span class="wave"></span>
+        <span class="wave"></span>
+        <span class="wave"></span>
+      </span>
+      <span class="music-info-pill">
+        <span class="music-song-name">Solo Tú ♫</span>
+        <strong id="music-status" class="music-status-badge">Play</strong>
+      </span>
+    </button>
+  </div>
+
+  <!-- Contenedor del reproductor de YouTube -->
+  <div id="yt-player-container" class="yt-hidden-player" aria-hidden="true">
+    <div id="yt-audio-player"></div>
+  </div>
+  <!-- Reproductor nativo de audio (boda.mp3 en assets/audio/) -->
+  <audio id="wedding-local-audio" src="assets/audio/boda.mp3" preload="auto" loop></audio>
+
+  <!-- BOTÓN FLOTANTE PARA VOLVER A VER EL SOBRE -->
+  <button id="reopen-envelope-btn" class="reopen-envelope-btn" title="Ver sobre de nuevo">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+      <polyline points="22,6 12,13 2,6"></polyline>
+    </svg>
+    <span>Ver Sobre</span>
+  </button>
+
+  <!-- ============================================================ -->
+  <!-- VISTA PRINCIPAL: EXPERIENCIA DEL SOBRE INTERACTIVO 3D        -->
+  <!-- Formato y colores inspirados fielmente en la foto de referencia -->
+  <!-- ============================================================ -->
+  <section id="envelope-hero" class="envelope-hero-section">
+    <div class="envelope-scene-wrapper">
+      
+      <!-- Mensaje previo de bienvenida -->
+      <div class="envelope-intro-text">
+        <span class="intro-tag">Save The Date</span>
+        <h1 class="intro-title">Joaquín &amp; Valdelene</h1>
+        <!-- Saludo personalizado si llega con ?nombre=... -->
+        <div class="guest-greeting-banner" id="guest-greeting-section" style="display:none;">
+          <span class="greeting-prefix">Querido/a</span>
+          <span class="personalized-guest-name greeting-name"></span>
+          <span class="greeting-suffix">— Estás cordialmente invitado/a</span>
+        </div>
+        <p class="intro-instruction">Toca el sello para abrir la invitación</p>
+      </div>
+
+      <!-- El Sobre Físico 3D en Verde Oliva -->
+      <div class="envelope-wrapper" id="envelope-wrapper">
+        <div class="envelope" id="envelope">
+          
+          <!-- Capa trasera del sobre con forro interior idéntico a la foto (Blanco con Olivo y Caligrafía) -->
+          <div class="envelope-back">
+            <div class="envelope-lining-paper">
+              <div class="lining-names">Joaquín y Valdelene</div>
+              <div class="lining-olive-art">
+                <svg class="olive-branch-svg" viewBox="0 0 460 140" fill="none">
+                  <path d="M 20 30 Q 150 50 280 40 T 440 25" stroke="#71664d" stroke-width="2.5" stroke-linecap="round"/>
+                  <path d="M 120 44 Q 180 75 240 85" stroke="#71664d" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M 260 41 Q 320 65 370 70" stroke="#71664d" stroke-width="1.8" stroke-linecap="round"/>
+                  <path d="M 50 34 C 70 20, 100 15, 115 12 C 105 28, 80 40, 50 34 Z" fill="#7d9575"/>
+                  <path d="M 80 39 C 110 50, 140 65, 155 75 C 130 75, 100 60, 80 39 Z" fill="#8ea684"/>
+                  <path d="M 130 45 C 160 30, 200 25, 225 22 C 210 40, 175 52, 130 45 Z" fill="#6c8465"/>
+                  <path d="M 160 55 C 190 70, 220 85, 235 100 C 210 98, 180 85, 160 55 Z" fill="#9db494"/>
+                  <path d="M 210 43 C 245 42, 280 48, 305 52 C 285 65, 245 62, 210 43 Z" fill="#789070"/>
+                  <path d="M 250 42 C 280 25, 320 20, 345 18 C 330 35, 295 48, 250 42 Z" fill="#698263"/>
+                  <path d="M 300 48 C 335 62, 370 70, 395 76 C 370 82, 335 72, 300 48 Z" fill="#8ca484"/>
+                  <path d="M 350 35 C 385 28, 420 30, 445 32 C 430 45, 395 50, 350 35 Z" fill="#758d6e"/>
+                  <path d="M 400 28 C 425 22, 450 20, 465 18 C 455 30, 430 35, 400 28 Z" fill="#8aa281"/>
+                  <g transform="translate(145, 68) rotate(18)">
+                    <ellipse cx="0" cy="0" rx="8" ry="13" fill="#6f8863"/>
+                    <ellipse cx="-2" cy="-3" rx="3.5" ry="6.5" fill="#8fa983" opacity="0.7"/>
+                    <circle cx="-3" cy="-5" r="1.2" fill="#d2e3cb" opacity="0.8"/>
+                  </g>
+                  <g transform="translate(235, 76) rotate(-12)">
+                    <ellipse cx="0" cy="0" rx="8.5" ry="14" fill="#657d5a"/>
+                    <ellipse cx="-2" cy="-3" rx="3.5" ry="7" fill="#89a27d" opacity="0.7"/>
+                    <circle cx="-3" cy="-5" r="1.2" fill="#d0e2c8" opacity="0.8"/>
+                  </g>
+                  <g transform="translate(325, 58) rotate(25)">
+                    <ellipse cx="0" cy="0" rx="8" ry="13" fill="#718a66"/>
+                    <ellipse cx="-2" cy="-3" rx="3" ry="6" fill="#93ac88" opacity="0.7"/>
+                    <circle cx="-3" cy="-5" r="1.2" fill="#d4e5ce" opacity="0.8"/>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carta de la invitación (formato idéntico al de la foto) -->
+          <div class="invitation-peek-card" id="invitation-peek-card">
+            <div class="card-inner-peek">
+              
+              <!-- Rama de Olivo con Acuarela en la cabecera -->
+              <div class="card-olive-header">
+                <svg class="olive-branch-svg" viewBox="0 0 460 140" fill="none">
+                  <path d="M 20 30 Q 150 50 280 40 T 440 25" stroke="#71664d" stroke-width="2.5" stroke-linecap="round"/>
+                  <path d="M 120 44 Q 180 75 240 85" stroke="#71664d" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M 260 41 Q 320 65 370 70" stroke="#71664d" stroke-width="1.8" stroke-linecap="round"/>
+                  <path d="M 50 34 C 70 20, 100 15, 115 12 C 105 28, 80 40, 50 34 Z" fill="#7d9575"/>
+                  <path d="M 80 39 C 110 50, 140 65, 155 75 C 130 75, 100 60, 80 39 Z" fill="#8ea684"/>
+                  <path d="M 130 45 C 160 30, 200 25, 225 22 C 210 40, 175 52, 130 45 Z" fill="#6c8465"/>
+                  <path d="M 160 55 C 190 70, 220 85, 235 100 C 210 98, 180 85, 160 55 Z" fill="#9db494"/>
+                  <path d="M 210 43 C 245 42, 280 48, 305 52 C 285 65, 245 62, 210 43 Z" fill="#789070"/>
+                  <path d="M 250 42 C 280 25, 320 20, 345 18 C 330 35, 295 48, 250 42 Z" fill="#698263"/>
+                  <path d="M 300 48 C 335 62, 370 70, 395 76 C 370 82, 335 72, 300 48 Z" fill="#8ca484"/>
+                  <path d="M 350 35 C 385 28, 420 30, 445 32 C 430 45, 395 50, 350 35 Z" fill="#758d6e"/>
+                  <path d="M 400 28 C 425 22, 450 20, 465 18 C 455 30, 430 35, 400 28 Z" fill="#8aa281"/>
+                  <g transform="translate(145, 68) rotate(18)">
+                    <ellipse cx="0" cy="0" rx="8" ry="13" fill="#6f8863"/>
+                    <ellipse cx="-2" cy="-3" rx="3.5" ry="6.5" fill="#8fa983" opacity="0.7"/>
+                    <circle cx="-3" cy="-5" r="1.2" fill="#d2e3cb" opacity="0.8"/>
+                  </g>
+                  <g transform="translate(235, 76) rotate(-12)">
+                    <ellipse cx="0" cy="0" rx="8.5" ry="14" fill="#657d5a"/>
+                    <ellipse cx="-2" cy="-3" rx="3.5" ry="7" fill="#89a27d" opacity="0.7"/>
+                    <circle cx="-3" cy="-5" r="1.2" fill="#d0e2c8" opacity="0.8"/>
+                  </g>
+                  <g transform="translate(325, 58) rotate(25)">
+                    <ellipse cx="0" cy="0" rx="8" ry="13" fill="#718a66"/>
+                    <ellipse cx="-2" cy="-3" rx="3" ry="6" fill="#93ac88" opacity="0.7"/>
+                    <circle cx="-3" cy="-5" r="1.2" fill="#d4e5ce" opacity="0.8"/>
+                  </g>
+                </svg>
+              </div>
+
+              <!-- Banner "¡Nos casamos!" -->
+              <div class="card-banner-wrapper">
+                <span class="card-banner-ornament">~</span>
+                <span class="card-banner-text">¡Nos Casamos!</span>
+                <span class="card-banner-ornament">~</span>
+              </div>
+
+              <!-- Nombres en caligrafía cursiva estética idéntica a la foto -->
+              <h2 class="card-script-names">Joaquín y Valdelene</h2>
+
+              <!-- Texto y fecha -->
+              <p class="card-invite-msg">Nos gustaría compartir este día tan especial con ustedes</p>
+              
+              <div class="card-date-line">
+                <span>Sábado, 22 de Mayo de 2027</span>
+                <span class="card-time-line">A las 16:30 horas</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bolsillo frontal del sobre en verde oliva (triángulos izquierdo, derecho y base) -->
+          <div class="envelope-pocket-left"></div>
+          <div class="envelope-pocket-right"></div>
+          <div class="envelope-pocket-bottom"></div>
+
+          <!-- Solapa triangular superior en verde oliva (se abre en 3D) -->
+          <div class="envelope-flap" id="envelope-flap">
+            <div class="flap-triangle"></div>
+          </div>
+
+          <!-- Sello de Lacre Realista Dorado con Iniciales J & V Claras y Distintivas -->
+          <div class="wax-seal gold-seal" id="wax-seal" role="button" tabindex="0" aria-label="Abrir sobre con sello de lacre dorado">
+            <div class="wax-seal-outer">
+              <svg class="gold-wax-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <!-- Degradados metálicos dorados para la cera líquida y el cuño -->
+                  <radialGradient id="waxGoldBase" cx="35%" cy="32%" r="68%">
+                    <stop offset="0%" stop-color="#fff8db"/>
+                    <stop offset="20%" stop-color="#edd285"/>
+                    <stop offset="55%" stop-color="#c89d3e"/>
+                    <stop offset="85%" stop-color="#916a21"/>
+                    <stop offset="100%" stop-color="#583d0c"/>
+                  </radialGradient>
+
+                  <radialGradient id="waxInnerBase" cx="35%" cy="35%" r="62%">
+                    <stop offset="0%" stop-color="#fcedb6"/>
+                    <stop offset="45%" stop-color="#cca245"/>
+                    <stop offset="85%" stop-color="#8c641f"/>
+                    <stop offset="100%" stop-color="#5e3f0e"/>
+                  </radialGradient>
+
+                  <linearGradient id="goldLetterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="35%" stop-color="#fffce8"/>
+                    <stop offset="80%" stop-color="#ffd878"/>
+                    <stop offset="100%" stop-color="#e0b24e"/>
+                  </linearGradient>
+
+                  <filter id="sealDropShadow" x="-25%" y="-25%" width="150%" height="150%">
+                    <feDropShadow dx="0" dy="5" stdDeviation="3.5" flood-color="#121d10" flood-opacity="0.45"/>
+                  </filter>
+                </defs>
+
+                <!-- Forma orgánica exterior de la cera derretida (borde fluido real) -->
+                <path d="M 60 5 
+                         C 79 3, 95 10, 106 23 
+                         C 117 36, 118 53, 115 69 
+                         C 112 85, 102 99, 88 108 
+                         C 74 118, 55 117, 40 113 
+                         C 25 109, 12 97, 6 82 
+                         C 0 67, 2 50, 9 36 
+                         C 16 22, 30 11, 46 6 
+                         Z" 
+                      fill="url(#waxGoldBase)" filter="url(#sealDropShadow)"/>
+
+                <!-- Brillo especular superior sobre la superficie de cera -->
+                <path d="M 36 12 C 55 7, 80 11, 95 22 C 101 27, 98 32, 90 28 C 76 19, 54 17, 37 21 C 29 23, 28 15, 36 12 Z" 
+                      fill="#ffffff" opacity="0.48"/>
+
+                <!-- Círculo interior presionado (impresión del cuño de latón) -->
+                <circle cx="60" cy="60" r="41.5" fill="url(#waxInnerBase)" stroke="#523608" stroke-width="1.2"/>
+                <circle cx="60" cy="60" r="41.5" fill="none" stroke="#fff4c4" stroke-width="1.2" opacity="0.6"/>
+
+                <!-- Doble anillo concéntrico decorativo y perlado -->
+                <circle cx="60" cy="60" r="38.5" fill="none" stroke="#63430c" stroke-width="0.8"/>
+                <circle cx="60" cy="60" r="37.5" fill="none" stroke="#ffea9f" stroke-width="0.8"/>
+                <circle cx="60" cy="60" r="35" fill="none" stroke="#63430c" stroke-width="1.2" stroke-dasharray="1.8, 2.2"/>
+                <circle cx="60" cy="60" r="34" fill="none" stroke="#fff8cf" stroke-width="1" stroke-dasharray="1.8, 2.2" opacity="0.85"/>
+
+                <!-- Corona botánica de olivo alrededor del monograma -->
+                <!-- Rama izquierda -->
+                <path d="M 32 60 C 32 44, 42 32, 53 28" fill="none" stroke="#482e05" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M 32 60 C 32 44, 42 32, 53 28" fill="none" stroke="#ffea9f" stroke-width="1" stroke-linecap="round"/>
+                <path d="M 32 60 C 32 76, 42 88, 53 92" fill="none" stroke="#482e05" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M 32 60 C 32 76, 42 88, 53 92" fill="none" stroke="#ffea9f" stroke-width="1" stroke-linecap="round"/>
+                <!-- Hojitas izquierda -->
+                <path d="M 34 48 C 29 45, 29 40, 35 42 Z" fill="#fff5c4" stroke="#523709" stroke-width="0.7"/>
+                <path d="M 39 38 C 35 34, 37 29, 43 33 Z" fill="#fff5c4" stroke="#523709" stroke-width="0.7"/>
+                <path d="M 46 31 C 44 26, 48 23, 52 27 Z" fill="#fff5c4" stroke="#523709" stroke-width="0.7"/>
+                <path d="M 34 72 C 29 75, 29 80, 35 78 Z" fill="#fff5c4" stroke="#523709" stroke-width="0.7"/>
+                <path d="M 39 82 C 35 86, 37 91, 43 87 Z" fill="#fff5c4" stroke="#523709" stroke-width="0.7"/>
+                <path d="M 46 89 C 44 94, 48 97, 52 93 Z" fill="#fff5c4" stroke="#523709" stroke-width="0.7"/>
+
+                <!-- Rama derecha -->
+                <path d="M 88 60 C 88 44, 78 32, 67 28" fill="none" stroke="#482e05" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M 88 60 C 88 44, 78 32, 67 28" fill="none" stroke="#ffea9f" stroke-width="1" stroke-linecap="round"/>
+                <path d="M 88 60 C 88 76, 78 88, 67 92" fill="none" stroke="#482e05" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M 88 60 C 88 76, 78 88, 67 92" fill="none" stroke="#ffea9f" stroke-width="1" stroke-linecap="round"/>
+                <!-- Hojitas derecha -->
+                <path d="M 86 48 C 91 45, 91 40, 85 42 Z" fill="#fff5c4" stroke="#523709" stroke-width="0.7"/>
+                <path d="M 81 38 C 85 34, 83 29, 77 33 Z" fill="#fff5c4" stroke="#523709" stroke-width="0.7"/>
+                <path d="M 74 31 C 76 26, 72 23, 68 27 Z" fill="#fff5c4" stroke="#523709" stroke-width="0.7"/>
+                <path d="M 86 72 C 91 75, 91 80, 85 78 Z" fill="#fff5c4" stroke="#523709" stroke-width="0.7"/>
+                <path d="M 81 82 C 85 86, 83 91, 77 87 Z" fill="#fff5c4" stroke="#523709" stroke-width="0.7"/>
+                <path d="M 74 89 C 76 94, 72 97, 68 93 Z" fill="#fff5c4" stroke="#523709" stroke-width="0.7"/>
+
+                <!-- ======================================================== -->
+                <!-- MONOGRAMA "J & V" EN ALTO RELIEVE DORADO SÚPER NÍTIDO     -->
+                <!-- ======================================================== -->
+                
+                <!-- 1. Sombra chiseled inferior/derecha (profundidad esculpida) -->
+                <g fill="#3a2405" font-family="'Playfair Display', Georgia, serif" font-weight="700">
+                  <text x="44.2" y="68.2" font-size="29" text-anchor="middle">J</text>
+                  <text x="60.2" y="63.8" font-size="16.5" font-family="'Cormorant Garamond', Georgia, serif" font-style="italic" font-weight="700" text-anchor="middle">&amp;</text>
+                  <text x="76.2" y="68.2" font-size="29" text-anchor="middle">V</text>
+                </g>
+
+                <!-- 2. Arista de bisel brillante blanco/oro (relieve superior) -->
+                <g fill="#ffffff" opacity="0.95" font-family="'Playfair Display', Georgia, serif" font-weight="700">
+                  <text x="42.8" y="66" font-size="29" text-anchor="middle">J</text>
+                  <text x="59.4" y="61.8" font-size="16.5" font-family="'Cormorant Garamond', Georgia, serif" font-style="italic" font-weight="700" text-anchor="middle">&amp;</text>
+                  <text x="74.8" y="66" font-size="29" text-anchor="middle">V</text>
+                </g>
+
+                <!-- 3. Superficie dorada pulida frontal con perfil nítido -->
+                <g fill="url(#goldLetterGrad)" stroke="#523608" stroke-width="0.6" font-family="'Playfair Display', Georgia, serif" font-weight="700">
+                  <text x="43.5" y="67" font-size="29" text-anchor="middle">J</text>
+                  <text x="60" y="62.8" font-size="16.5" font-family="'Cormorant Garamond', Georgia, serif" font-style="italic" font-weight="700" text-anchor="middle">&amp;</text>
+                  <text x="75.5" y="67" font-size="29" text-anchor="middle">V</text>
+                </g>
+              </svg>
+            </div>
+            <div class="seal-glow-hint"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Indicador animado de scroll después de abrir -->
+      <div class="open-scroll-hint" id="open-scroll-hint">
+        <span>Desliza para ver todos los detalles</span>
+        <div class="scroll-arrow-down"></div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================ -->
+  <!-- CONTENIDO COMPLETO DE LA INVITACIÓN                          -->
+  <!-- ============================================================ -->
+  <main id="main-invitation-content" class="invitation-content-container">
+
+    <!-- SECCIÓN: PORTADA / HERO DE LA BODA (FORMATO IDÉNTICO A LA FOTO) -->
+    <section class="section wedding-hero-card">
+      
+      <!-- Rama de Olivo con Acuarela como en la foto -->
+      <div class="hero-olive-top">
+        <svg class="olive-branch-svg" viewBox="0 0 460 140" fill="none">
+          <path d="M 20 30 Q 150 50 280 40 T 440 25" stroke="#71664d" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M 120 44 Q 180 75 240 85" stroke="#71664d" stroke-width="2" stroke-linecap="round"/>
+          <path d="M 260 41 Q 320 65 370 70" stroke="#71664d" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M 50 34 C 70 20, 100 15, 115 12 C 105 28, 80 40, 50 34 Z" fill="#7d9575"/>
+          <path d="M 80 39 C 110 50, 140 65, 155 75 C 130 75, 100 60, 80 39 Z" fill="#8ea684"/>
+          <path d="M 130 45 C 160 30, 200 25, 225 22 C 210 40, 175 52, 130 45 Z" fill="#6c8465"/>
+          <path d="M 160 55 C 190 70, 220 85, 235 100 C 210 98, 180 85, 160 55 Z" fill="#9db494"/>
+          <path d="M 210 43 C 245 42, 280 48, 305 52 C 285 65, 245 62, 210 43 Z" fill="#789070"/>
+          <path d="M 250 42 C 280 25, 320 20, 345 18 C 330 35, 295 48, 250 42 Z" fill="#698263"/>
+          <path d="M 300 48 C 335 62, 370 70, 395 76 C 370 82, 335 72, 300 48 Z" fill="#8ca484"/>
+          <path d="M 350 35 C 385 28, 420 30, 445 32 C 430 45, 395 50, 350 35 Z" fill="#758d6e"/>
+          <path d="M 400 28 C 425 22, 450 20, 465 18 C 455 30, 430 35, 400 28 Z" fill="#8aa281"/>
+          <g transform="translate(145, 68) rotate(18)">
+            <ellipse cx="0" cy="0" rx="8" ry="13" fill="#6f8863"/>
+            <ellipse cx="-2" cy="-3" rx="3.5" ry="6.5" fill="#8fa983" opacity="0.7"/>
+            <circle cx="-3" cy="-5" r="1.2" fill="#d2e3cb" opacity="0.8"/>
+          </g>
+          <g transform="translate(235, 76) rotate(-12)">
+            <ellipse cx="0" cy="0" rx="8.5" ry="14" fill="#657d5a"/>
+            <ellipse cx="-2" cy="-3" rx="3.5" ry="7" fill="#89a27d" opacity="0.7"/>
+            <circle cx="-3" cy="-5" r="1.2" fill="#d0e2c8" opacity="0.8"/>
+          </g>
+          <g transform="translate(325, 58) rotate(25)">
+            <ellipse cx="0" cy="0" rx="8" ry="13" fill="#718a66"/>
+            <ellipse cx="-2" cy="-3" rx="3" ry="6" fill="#93ac88" opacity="0.7"/>
+            <circle cx="-3" cy="-5" r="1.2" fill="#d4e5ce" opacity="0.8"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Banner "¡Nos casamos!" -->
+      <div class="card-banner-wrapper hero-banner-wrapper">
+        <span class="card-banner-ornament">~</span>
+        <span class="card-banner-text">¡Nos Casamos!</span>
+        <span class="card-banner-ornament">~</span>
+      </div>
+
+      <!-- Nombres en caligrafía moderna fluida -->
+      <h1 class="hero-script-names">Joaquín y Valdelene</h1>
+
+      <p class="hero-invite-lead" id="hero-invite-text">
+        Nos gustaría compartir este día tan especial con ustedes
+      </p>
+
+      <!-- Dedicatoria personalizada dentro de la portada -->
+      <div class="hero-guest-dedication" id="hero-guest-dedication" style="display:none;">
+        <span class="dedication-line">Con mucho cariño para</span>
+        <span class="personalized-guest-name dedication-name"></span>
+      </div>
+
+      <div class="wedding-official-date">
+        <div class="date-divider"></div>
+        <div class="date-box">
+          <span class="date-weekday">SÁBADO</span>
+          <span class="date-day">22</span>
+          <span class="date-month-year">MAYO · 2027</span>
+        </div>
+        <div class="date-divider"></div>
+      </div>
+
+      <p class="hero-time-location">
+        A las 16:30 de la tarde · CASA TEEC Tu Espacio Ecológico
+      </p>
+
+      <!-- Foto de los novios con marco botánico aesthetic -->
+      <div class="couple-photo-frame">
+        <div class="photo-inner-border">
+          <img src="assets/images/couple.jpg" alt="Joaquín Moya y Valdelene De Souza" class="couple-photo" loading="eager">
+        </div>
+        <div class="photo-caption">Joaquín &amp; Valdelene</div>
+        <p class="photo-subcaption">“Caminemos juntos por el resto de nuestras vidas”</p>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: CUENTA REGRESIVA (COUNTDOWN) -->
+    <section class="section countdown-section">
+      <div class="section-header">
+        <span class="section-tag">TIEMPO RESTANTE</span>
+        <h3 class="section-title">Contando cada segundo</h3>
+        <p class="section-subtitle">Para decirnos: "Sí, acepto"</p>
+      </div>
+
+      <div class="countdown-grid" id="countdown-timer">
+        <div class="countdown-card">
+          <div class="countdown-number" id="days">--</div>
+          <div class="countdown-label">DÍAS</div>
+        </div>
+        <div class="countdown-card">
+          <div class="countdown-number" id="hours">--</div>
+          <div class="countdown-label">HORAS</div>
+        </div>
+        <div class="countdown-card">
+          <div class="countdown-number" id="minutes">--</div>
+          <div class="countdown-label">MINUTOS</div>
+        </div>
+        <div class="countdown-card">
+          <div class="countdown-number" id="seconds">--</div>
+          <div class="countdown-label">SEGUNDOS</div>
+        </div>
+      </div>
+
+      <div class="calendar-action-wrapper">
+        <a id="add-google-calendar-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span>Agendar en Google Calendar</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: DÓNDE Y CUÁNDO (ITINERARIO Y UBICACIÓN) -->
+    <section class="section itinerary-section">
+      <div class="section-header">
+        <span class="section-tag">DÓNDE &amp; CUÁNDO</span>
+        <h3 class="section-title">Itinerario de Celebración</h3>
+        <p class="section-subtitle">Acompáñanos a vivir cada instante</p>
+      </div>
+
+      <div class="timeline-container">
+        <!-- Evento 1 -->
+        <div class="timeline-card">
+          <div class="timeline-icon-box">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"></path>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <div class="timeline-content">
+            <span class="timeline-time">16:30 HRS</span>
+            <h4 class="timeline-heading">Recepción de Invitados</h4>
+            <p class="timeline-desc">Bienvenida con música acústica y cóctel ligero en los jardines.</p>
+          </div>
+        </div>
+
+        <!-- Evento 2 -->
+        <div class="timeline-card highlight-card">
+          <div class="timeline-icon-box">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="9" cy="12" r="5"></circle>
+              <circle cx="15" cy="12" r="5"></circle>
+            </svg>
+          </div>
+          <div class="timeline-content">
+            <span class="timeline-time">17:00 HRS</span>
+            <h4 class="timeline-heading">Ceremonia Nupcial</h4>
+            <p class="timeline-desc">El momento sagrado en que uniremos nuestras vidas ante Dios y nuestros seres amados.</p>
+          </div>
+        </div>
+
+        <!-- Evento 3 -->
+        <div class="timeline-card">
+          <div class="timeline-icon-box">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M8 22h8M12 15v7M19 3v3a7 7 0 0 1-14 0V3h14z"></path>
+            </svg>
+          </div>
+          <div class="timeline-content">
+            <span class="timeline-time">18:30 HRS</span>
+            <h4 class="timeline-heading">Vals Novios, Brindis y Cóctel</h4>
+            <p class="timeline-desc">Apertura del vals de honor, brindis junto a los novios y delicioso cóctel de celebración.</p>
+          </div>
+        </div>
+
+        <!-- Evento 4 -->
+        <div class="timeline-card">
+          <div class="timeline-icon-box">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+          <div class="timeline-content">
+            <span class="timeline-time">DESDE LAS 20:00 HRS</span>
+            <h4 class="timeline-heading">Comida y Juegos</h4>
+            <p class="timeline-desc">Cena gourmet de celebración, dinámicas, juegos y momentos inolvidables.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TARJETA DEL LUGAR (VENUE) -->
+      <div class="venue-card">
+        <div class="venue-header">
+          <div class="venue-pin-icon">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <h4 class="venue-name">CASA TEEC Tu Espacio Ecológico</h4>
+          <p class="venue-address">Condominio Miraflores de Lipangue 0732, Lampa, Región Metropolitana</p>
+        </div>
+
+        <div class="venue-actions">
+          <a href="https://maps.app.goo.gl/pcc9NVzuUZrEiHdq8" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+            <span>Ver en Google Maps</span>
+          </a>
+          <a href="https://maps.app.goo.gl/pcc9NVzuUZrEiHdq8" target="_blank" rel="noopener noreferrer" class="btn btn-outline">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M8 12s1.5 2 4 2 4-2 4-2"></path>
+              <line x1="9" y1="9" x2="9.01" y2="9"></line>
+              <line x1="15" y1="9" x2="15.01" y2="9"></line>
+            </svg>
+            <span>Cómo Llegar</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: DRESS CODE (CÓDIGO DE VESTIMENTA) -->
+    <section class="section dress-code-section">
+      <div class="section-header">
+        <span class="section-tag">CÓDIGO DE VESTIMENTA</span>
+        <h3 class="section-title">Formal / Elegante</h3>
+        <p class="section-subtitle">Queremos que te sientas cómodo, distinguido y radiante</p>
+      </div>
+
+      <div class="dress-code-card">
+        <div class="dress-icons-row">
+          <div class="dress-icon-item">
+            <div class="icon-circle">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M6 3h12l-2 9H8L6 3z"></path>
+                <path d="M8 12l-4 9h16l-4-9"></path>
+              </svg>
+            </div>
+            <span>Damas</span>
+            <small>Vestido largo o midi elegante</small>
+          </div>
+          <div class="dress-icon-item">
+            <div class="icon-circle">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M4 4l8 4 8-4v16H4V4z"></path>
+                <path d="M12 8v12"></path>
+              </svg>
+            </div>
+            <span>Varones</span>
+            <small>Traje formal con corbata o humita</small>
+          </div>
+        </div>
+
+        <div class="dress-important-note">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+          <span>Agradecemos reservar los colores <strong>blanco, perla, marfil y tonos de verde</strong> exclusivamente para los novios.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: REGALOS / MESA DE REGALOS -->
+    <section class="section gifts-section">
+      <div class="section-header">
+        <span class="section-tag">DETALLES</span>
+        <h3 class="section-title">Mesa de Regalos</h3>
+        <p class="section-subtitle">Tu presencia es nuestro regalo más valioso</p>
+      </div>
+
+      <div class="gift-card">
+        <div class="gift-envelope-icon">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path>
+            <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path>
+            <circle cx="18" cy="12" r="2"></circle>
+          </svg>
+        </div>
+
+        <p class="gift-message">
+          Si deseas tener un detalle para acompañar el inicio de nuestro nuevo hogar y nuestra luna de miel, puedes hacerlo mediante sobre el día del evento o por transferencia bancaria:
+        </p>
+
+        <div class="bank-details-box">
+          <div class="bank-item">
+            <span class="bank-label">Titular:</span>
+            <span class="bank-value">Joaquín Moya</span>
+          </div>
+          <div class="bank-item">
+            <span class="bank-label">Banco:</span>
+            <span class="bank-value">Banco Santander</span>
+          </div>
+          <div class="bank-item">
+            <span class="bank-label">Tipo de Cuenta:</span>
+            <span class="bank-value">Cuenta Corriente</span>
+          </div>
+          <div class="bank-item">
+            <span class="bank-label">N° de Cuenta:</span>
+            <span class="bank-value" id="bank-acc">0 000 27 72093 5</span>
+            <button class="btn-copy" data-target="bank-acc" title="Copiar número de cuenta">Copiar</button>
+          </div>
+          <div class="bank-item">
+            <span class="bank-label">RUT:</span>
+            <span class="bank-value" id="bank-rut">21.666.639-9</span>
+            <button class="btn-copy" data-target="bank-rut" title="Copiar RUT">Copiar</button>
+          </div>
+          <div class="bank-item">
+            <span class="bank-label">Correo:</span>
+            <span class="bank-value" id="bank-email">caco.joaquin.moya2004@gmail.com</span>
+            <button class="btn-copy" data-target="bank-email" title="Copiar correo">Copiar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: CONFIRMACIÓN DE ASISTENCIA (RSVP) -->
+    <section class="section rsvp-section" id="rsvp-section">
+      <div class="section-header">
+        <span class="section-tag">R.S.V.P.</span>
+        <h3 class="section-title">Confirma tu Asistencia</h3>
+        <p class="section-subtitle">Por favor confírmanos antes del <strong>20 de Abril de 2027</strong></p>
+      </div>
+
+      <div class="rsvp-card">
+        <form id="rsvp-form" class="rsvp-form">
+          <div class="form-group">
+            <label for="guest-name">Nombre y Apellido(s) *</label>
+            <input type="text" id="guest-name" name="guest-name" required placeholder="Ej: Marcela y Carlos Pérez">
+          </div>
+
+          <div class="form-group">
+            <label>¿Podrás acompañarnos? *</label>
+            <div class="radio-options">
+              <label class="radio-card">
+                <input type="radio" name="attendance" value="si" checked>
+                <div class="radio-content">
+                  <span class="radio-emoji">✨</span>
+                  <span class="radio-title">¡Sí, asistiré con alegría!</span>
+                </div>
+              </label>
+
+              <label class="radio-card">
+                <input type="radio" name="attendance" value="no">
+                <div class="radio-content">
+                  <span class="radio-emoji">🤍</span>
+                  <span class="radio-title">Lo siento, no podré asistir</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group" id="guests-count-group">
+            <label for="guests-count">Número de Personas Confirmadas</label>
+            <select id="guests-count" name="guests-count">
+              <option value="1">1 Persona</option>
+              <option value="2" selected>2 Personas</option>
+              <option value="3">3 Personas</option>
+              <option value="4">4 Personas</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="dietary-needs">Restricciones Alimentarias o Alergias</label>
+            <input type="text" id="dietary-needs" name="dietary-needs" placeholder="Ej: Vegetariano, celíaco, ninguna">
+          </div>
+
+          <div class="form-actions">
+            <!-- Botón principal de WhatsApp -->
+            <button type="button" id="rsvp-whatsapp-btn" class="btn btn-whatsapp">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.36c0-4.54 3.7-8.24 8.24-8.24m4.52 11.58c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.14-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.12-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.49-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.12.17 1.77 2.7 4.29 3.78.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.11-.23-.18-.48-.3z"/>
+              </svg>
+              <span>Confirmar por WhatsApp</span>
+            </button>
+
+            <!-- Botón secundario para guardar localmente -->
+            <button type="submit" class="btn btn-primary">
+              <span>Guardar en Lista de Invitados</span>
+            </button>
+          </div>
+
+          <!-- Contacto directo para dudas -->
+          <div class="rsvp-direct-contact">
+            <span>¿Tienes alguna consulta especial? Escríbenos directamente:</span>
+            <a href="https://wa.me/56973019072?text=Hola%20Joaqu%C3%ADn%20y%20Valdelene,%20tengo%20una%20consulta%20sobre%20su%20boda%20💍" target="_blank" rel="noopener noreferrer" class="whatsapp-direct-link" title="Contactar a los novios">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.36c0-4.54 3.7-8.24 8.24-8.24m4.52 11.58c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.14-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.12-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.49-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.12.17 1.77 2.7 4.29 3.78.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.11-.23-.18-.48-.3z"/>
+              </svg>
+              <span>+56 9 7301 9072</span>
+            </a>
+          </div>
+        </form>
+
+        <div id="rsvp-status-message" class="rsvp-status-message"></div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: LIBRO DE BUENOS DESEOS (GUESTBOOK) -->
+    <section class="section guestbook-section">
+      <div class="section-header">
+        <span class="section-tag">LIBRO DE FIRMAS</span>
+        <h3 class="section-title">Déjanos tus Deseos</h3>
+        <p class="section-subtitle">Tus palabras llenarán de alegría nuestro corazón</p>
+      </div>
+
+      <div class="guestbook-card">
+        <form id="wishes-form" class="wishes-form">
+          <input type="text" id="wish-author" placeholder="Tu nombre" required>
+          <textarea id="wish-message" rows="3" placeholder="Escribe un mensaje o bendición para Joaquín y Valdelene..." required></textarea>
+          <button type="submit" class="btn btn-secondary">
+            <span>Publicar Mensaje 🕊️</span>
+          </button>
+        </form>
+
+        <div class="wishes-list" id="wishes-list">
+          <!-- Mensajes dinámicos aquí -->
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER ELEGANTE -->
+    <footer class="wedding-footer">
+      <div class="footer-monogram">J &amp; V</div>
+      <p class="footer-thanks">Gracias por ser parte de nuestra historia</p>
+      <p class="footer-names">Joaquín Moya &amp; Valdelene De Souza</p>
+      <div class="footer-date">22 · MAYO · 2027</div>
+      <div class="footer-leaf">🌿</div>
+    </footer>
+
+  </main>
+
+  <!-- NOTIFICACIÓN FLOTANTE (TOAST) -->
+  <div id="toast" class="toast-notification"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
