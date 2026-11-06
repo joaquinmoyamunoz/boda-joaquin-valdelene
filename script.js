@@ -736,9 +736,17 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   function loadWishes() {
-    const saved = localStorage.getItem('wedding_wishes_list');
-    const wishes = saved ? JSON.parse(saved) : defaultWishes;
+    let wishes = defaultWishes;
+    try {
+      const saved = localStorage.getItem('wedding_wishes_list');
+      if (saved) {
+        wishes = JSON.parse(saved);
+      }
+    } catch (e) {
+      console.warn('Error leyendo localStorage de deseos:', e);
+    }
 
+    if (!wishesList) return;
     wishesList.innerHTML = '';
     wishes.forEach(w => {
       const item = document.createElement('div');
@@ -754,30 +762,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  wishesForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const author = document.getElementById('wish-author').value.trim();
-    const message = document.getElementById('wish-message').value.trim();
+  if (wishesForm) {
+    wishesForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const authorInput = document.getElementById('wish-author');
+      const messageInput = document.getElementById('wish-message');
 
-    if (!author || !message) return;
+      const author = authorInput ? authorInput.value.trim() : '';
+      const message = messageInput ? messageInput.value.trim() : '';
 
-    const newWish = {
-      author,
-      message,
-      date: new Date().toLocaleDateString()
-    };
+      if (!author || !message) {
+        showToast('Por favor completa tu nombre y mensaje');
+        return;
+      }
 
-    let wishes = JSON.parse(localStorage.getItem('wedding_wishes_list') || '[]');
-    if (wishes.length === 0) {
-      wishes = [...defaultWishes];
-    }
-    wishes.unshift(newWish);
-    localStorage.setItem('wedding_wishes_list', JSON.stringify(wishes));
+      const newWish = {
+        author,
+        message,
+        date: new Date().toLocaleDateString('es-CL')
+      };
 
-    wishesForm.reset();
-    loadWishes();
-    showToast('¡Tu mensaje ha sido publicado! 🕊️');
-  });
+      try {
+        let wishes = [];
+        const saved = localStorage.getItem('wedding_wishes_list');
+        if (saved) {
+          wishes = JSON.parse(saved);
+        } else {
+          wishes = [...defaultWishes];
+        }
+        wishes.unshift(newWish);
+        localStorage.setItem('wedding_wishes_list', JSON.stringify(wishes));
+      } catch (err) {
+        console.warn('Error guardando en localStorage:', err);
+      }
+
+      wishesForm.reset();
+      loadWishes();
+      showToast('¡Tu mensaje ha sido publicado en el mural! 🕊️');
+    });
+  }
 
   loadWishes();
 
